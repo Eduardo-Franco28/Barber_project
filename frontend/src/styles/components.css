@@ -1,0 +1,510 @@
+/* ── Botões ─────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  padding: 13px 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.btn--primary {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: #2c2c2c;
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: var(--gray-100);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+/* ── Campos de formulário ───────────────────────────────── */
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray-600);
+}
+
+.field__input {
+  padding: 12px 14px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  background: var(--paper);
+}
+
+.field__input::placeholder {
+  color: var(--gray-400);
+}
+
+.field__input:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+.field__input--error {
+  border-color: var(--ink);
+}
+
+.field__error {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ── Formulário / erro geral (P&B: erro em preto, sem vermelho) ── */
+.form {
+  display: grid;
+  gap: var(--s-4);
+}
+
+.form-error {
+  border: 1px solid var(--ink);
+  border-left-width: 4px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+/* ── Abas editoriais ────────────────────────────────────── */
+.tabs {
+  display: flex;
+  gap: var(--s-5);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 0 0 12px;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-400);
+  cursor: pointer;
+}
+
+.tab--active {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* ── Marca ──────────────────────────────────────────────── */
+.brand {
+  text-align: center;
+}
+
+.brand__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 40px;
+  letter-spacing: -0.02em;
+}
+
+.brand__sub {
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gray-600);
+  margin-top: var(--s-1);
+}
+
+/* ── Layout da tela de auth ─────────────────────────────── */
+.auth {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--s-5);
+}
+
+.auth__box {
+  width: 100%;
+  max-width: 400px;
+  display: grid;
+  gap: var(--s-6);
+}
+
+.auth__hint {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--gray-400);
+}
+
+/* ── Casca do app (páginas autenticadas) ────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s-4) var(--s-5);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.topbar__brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.topbar__brand-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+}
+
+.topbar__link {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-600);
+  text-decoration: none;
+}
+
+.topbar__link:hover {
+  color: var(--ink);
+}
+
+.profile-form {
+  max-width: 400px;
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--s-7) var(--s-5);
+  display: grid;
+  gap: var(--s-3);
+}
+
+/* ── Cartão (bordas finas, sem sombra) ──────────────────── */
+.card {
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: var(--s-5);
+}
+
+/* ── Seções de página ───────────────────────────────────── */
+.section {
+  display: grid;
+  gap: var(--s-4);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--gray-200);
+  margin-top: var(--s-4);
+}
+
+.section__title {
+  font-size: 20px;
+}
+
+.section__sub {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray-600);
+  margin-top: var(--s-2);
+}
+
+/* ── Aviso neutro (sucesso/informação — P&B) ────────────── */
+.banner {
+  border: 1px solid var(--ink);
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+/* ── Lista de serviços (seleção múltipla) ───────────────── */
+.service-list {
+  display: grid;
+  gap: var(--s-2);
+}
+
+.service-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 14px 16px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.service-item--on {
+  border-color: var(--ink);
+  background: var(--gray-100);
+}
+
+.service-item__input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.service-item__check {
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--paper);
+}
+
+.service-item--on .service-item__check {
+  background: var(--ink);
+}
+
+.service-item__input:focus-visible ~ .service-item__check {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.service-item__name {
+  font-weight: 500;
+}
+
+.service-item__meta {
+  font-size: 13px;
+  color: var(--gray-600);
+}
+
+/* ── Grade de horários ──────────────────────────────────── */
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  gap: var(--s-2);
+}
+
+.slot {
+  padding: 10px 0;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  background: var(--paper);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.slot:hover {
+  border-color: var(--ink);
+}
+
+.slot--on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.slot:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* ── Barra de confirmação ───────────────────────────────── */
+.confirm-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  padding: var(--s-4);
+}
+
+/* ── Lista de agendamentos ──────────────────────────────── */
+.appt-list {
+  display: grid;
+  gap: var(--s-2);
+}
+
+.appt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.appt__when {
+  font-size: 15px;
+}
+
+.appt__status {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+}
+
+.history summary {
+  font-size: 13px;
+  color: var(--gray-600);
+  cursor: pointer;
+}
+
+.history[open] summary {
+  margin-bottom: var(--s-3);
+}
+
+/* ── Miudezas ───────────────────────────────────────────── */
+.btn--small {
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+.date-input {
+  max-width: 220px;
+}
+
+/* ── Painel do barbeiro ─────────────────────────────────── */
+.view {
+  display: grid;
+  gap: var(--s-5);
+  padding-top: var(--s-4);
+}
+
+.stats {
+  display: flex;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+
+.stat {
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: var(--s-4) var(--s-5);
+  min-width: 120px;
+}
+
+.stat__num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 28px;
+}
+
+.stat__label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray-600);
+}
+
+.day-nav {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.appt__actions {
+  display: flex;
+  gap: var(--s-2);
+}
+
+.form-row {
+  display: flex;
+  gap: var(--s-3);
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.form-row .field {
+  min-width: 140px;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--gray-400);
+  color: var(--gray-600);
+  padding: 2px 8px;
+  border-radius: var(--radius);
+  margin-left: var(--s-2);
+}
+
+.subheading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.hours-row {
+  display: flex;
+  gap: var(--s-3);
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.hours-row__day {
+  width: 120px;
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ── Carregamento inicial ───────────────────────────────── */
+.boot {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+}
