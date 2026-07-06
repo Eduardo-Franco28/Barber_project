@@ -9,6 +9,7 @@ import fixedAppointmentsRoutes from './fixed-appointments.routes.js';
 import healthRoutes from './health.routes.js';
 import servicesRoutes from './services.routes.js';
 import settingsRoutes from './settings.routes.js';
+import spreadsheetRoutes from './spreadsheet.routes.js';
 
 const router = Router();
 
@@ -21,5 +22,6 @@ router.use('/fixed-appointments', fixedAppointmentsRoutes);
 router.use('/blocked-times', blockedTimesRoutes);
 router.use('/business-hours', businessHoursRoutes);
 router.use('/settings', settingsRoutes);
+router.use('/spreadsheet', spreadsheetRoutes);
 
 export default router;

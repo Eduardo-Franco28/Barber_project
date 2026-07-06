@@ -11,8 +11,14 @@ const app = express();
 
 app.disable('x-powered-by');
 
+// Atrás do proxy da hospedagem (Render): habilita req.secure e o IP real
+// (X-Forwarded-For) para cookies Secure e rate limiting corretos.
+if (env.nodeEnv === 'production') {
+  app.set('trust proxy', 1);
+}
+
 app.use(helmet());
-app.use(cors({ origin: env.corsOrigin, credentials: true }));
+app.use(cors({ origin: env.corsOrigins, credentials: true }));
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 

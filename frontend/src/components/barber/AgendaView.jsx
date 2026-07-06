@@ -5,6 +5,7 @@ import {
   listAppointmentsBetween,
   markAppointmentDone,
 } from '../../api/appointments.js';
+import { downloadSpreadsheet } from '../../api/spreadsheet.js';
 import {
   formatApptTime,
   formatDayLong,
@@ -30,6 +31,8 @@ export function AgendaView() {
   const [error, setError] = useState(null);
   const [confirmingId, setConfirmingId] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState(null);
 
   async function loadDay(day) {
     setItems(null);
@@ -79,6 +82,18 @@ export function AgendaView() {
     }
   }
 
+  async function handleDownload() {
+    setDownloading(true);
+    setDownloadError(null);
+    try {
+      await downloadSpreadsheet();
+    } catch (err) {
+      setDownloadError(err.message);
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   return (
     <div className="view" data-testid="agenda-view">
       {error && <div className="form-error">{error}</div>}
@@ -93,6 +108,22 @@ export function AgendaView() {
           <div className="stat__label">próx. 7 dias</div>
         </div>
       </div>
+
+      <div className="excel-bar">
+        <Button
+          variant="ghost"
+          className="btn--small"
+          data-testid="download-xlsx"
+          disabled={downloading}
+          onClick={handleDownload}
+        >
+          ↓ Baixar planilha (Excel)
+        </Button>
+        <span className="muted excel-bar__hint">
+          Sempre com os dados mais recentes — baixe de novo quando quiser atualizar.
+        </span>
+      </div>
+      {downloadError && <div className="form-error">{downloadError}</div>}
 
       <div className="day-nav">
         <Button variant="ghost" className="btn--small" aria-label="Dia anterior" onClick={() => setDate(shiftDay(date, -1))}>

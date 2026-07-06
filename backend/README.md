@@ -66,6 +66,7 @@ mínima de 30min; horizonte de 60 dias; fuso via `BARBERSHOP_TIMEZONE`.
 - `GET /business-hours`, `PUT /business-hours` — semana inteira de uma vez (7 dias)
 - `GET /settings`, `PATCH /settings` — intervalo padrão (10–240 min)
 - `POST /appointments/:id/done` — marca atendimento como concluído
+- `GET /spreadsheet` — baixa a planilha `.xlsx` gerada na hora (sempre atual)
 
 ## Planilha Excel (espelho da agenda)
 
@@ -76,7 +77,12 @@ cliente; fixos aparecem como clientes, bloqueios em cinza itálico. O arquivo
 é **regenerado inteiro do banco** a cada mudança (agendar, cancelar, fixos,
 bloqueios, horários, intervalo) e no boot — nunca dessincroniza. Se estiver
 aberto no Excel na hora da escrita, a atualização falha com log e é refeita
-na próxima mudança.
+na próxima mudança. O espelho em disco pode ser desligado com
+`EXCEL_MIRROR_ENABLED=false` (hospedagem com disco efêmero).
+
+O barbeiro também baixa a planilha sempre atual pelo app via `GET /spreadsheet`
+(gerada em memória na hora, sem depender do arquivo em disco). Deploy: ver
+`DEPLOY.md` na raiz.
 
 ## Notificações WhatsApp (Evolution API)
 

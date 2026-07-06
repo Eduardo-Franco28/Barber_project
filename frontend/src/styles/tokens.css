@@ -1,18 +1,47 @@
+/*
+ * Design tokens — identidade P&B editorial (CLAUDE.md > Design system).
+ * Dois temas na mesma identidade: claro (padrão) e escuro (P&B invertido).
+ * Os componentes usam SEMPRE os tokens semânticos (--bg, --surface, --text,
+ * --border, --accent…). Os primitivos (--ink/--paper/--gray-*) ficam definidos
+ * para compatibilidade, mas a cor real de cada tema vem dos semânticos.
+ */
 :root {
-  /* Cores — identidade P&B pura (CLAUDE.md > Design system) */
-  --ink: #0a0a0a;
+  /* Primitivos — claro */
+  --ink: #0a0a0b;
   --paper: #ffffff;
-  --gray-100: #f5f5f5;
-  --gray-200: #e5e5e5;
-  --gray-400: #a3a3a3;
-  --gray-600: #525252;
+  --gray-100: #f2f2f4;
+  --gray-200: #e6e6e9;
+  --gray-400: #9a9aa2;
+  --gray-600: #57575e;
 
-  /* Tipografia — Space Grotesk (títulos) + Inter (texto/UI) */
+  /* Semânticos — claro */
+  --bg: #f6f6f7;
+  --surface: #ffffff;
+  --surface-sunken: #f0f0f2;
+  --text: #0a0a0b;
+  --text-muted: #57575e;
+  --text-subtle: #9a9aa2;
+  --border: #e5e5e8;
+  --border-hover: #cfcfd4;
+  --accent: #0a0a0b;
+  --accent-contrast: #ffffff;
+  --accent-hover: #2a2a2e;
+  --ring: rgba(10, 10, 11, 0.16);
+  --overlay-hover: rgba(10, 10, 11, 0.05);
+  --shadow-sm: 0 1px 2px rgba(9, 9, 11, 0.05), 0 1px 3px rgba(9, 9, 11, 0.05);
+  --shadow-md: 0 10px 28px -8px rgba(9, 9, 11, 0.14);
+
+  /* Tipografia */
   --font-display: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
-  /* Forma — cantos quase retos, tom editorial */
-  --radius: 2px;
+  /* Forma */
+  --radius: 4px;
+  --radius-lg: 8px;
+
+  /* Respiro lateral da página (mesmo valor em .page e .topbar; as abas do
+     painel sangram por ele no mobile) */
+  --page-x: clamp(16px, 4vw, 32px);
 
   /* Espaçamento (escala de 4px) */
   --s-1: 4px;
@@ -23,4 +52,35 @@
   --s-6: 32px;
   --s-7: 48px;
   --s-8: 64px;
+
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  /* Primitivos — escuro */
+  --ink: #f5f5f6;
+  --paper: #0a0a0b;
+  --gray-100: #1b1b1f;
+  --gray-200: #26262b;
+  --gray-400: #6d6d76;
+  --gray-600: #a1a1ab;
+
+  /* Semânticos — escuro */
+  --bg: #0a0a0b;
+  --surface: #141416;
+  --surface-sunken: #1c1c1f;
+  --text: #f5f5f6;
+  --text-muted: #a1a1ab;
+  --text-subtle: #6d6d76;
+  --border: #26262b;
+  --border-hover: #3a3a42;
+  --accent: #f5f5f6;
+  --accent-contrast: #0a0a0b;
+  --accent-hover: #dcdce0;
+  --ring: rgba(245, 245, 246, 0.22);
+  --overlay-hover: rgba(245, 245, 246, 0.07);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+
+  color-scheme: dark;
 }

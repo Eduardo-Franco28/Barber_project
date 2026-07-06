@@ -32,10 +32,12 @@ const THIN_BORDER = {
 let queue = Promise.resolve();
 let timer = null;
 
-// Dispara a regeneração com debounce, fora do caminho da resposta HTTP.
-// Falha de escrita (ex.: arquivo aberto no Excel) só gera log — a próxima
-// mudança regenera de novo.
+// Dispara a regeneração do ESPELHO EM DISCO com debounce, fora do caminho da
+// resposta HTTP. Útil localmente (aponte EXCEL_FILE_PATH para uma pasta do
+// OneDrive/Dropbox). Em hospedagem com disco efêmero (ex.: Render), desligue
+// com EXCEL_MIRROR_ENABLED=false — o download sob demanda não depende disso.
 export function scheduleSync() {
+  if (!env.excelMirrorEnabled) return;
   clearTimeout(timer);
   timer = setTimeout(() => {
     queue = queue
@@ -50,9 +52,11 @@ export function scheduleSync() {
   timer.unref?.();
 }
 
-export async function syncNow() {
+// Monta o workbook inteiro a partir do banco — fonte única da verdade, sempre
+// atual no momento da chamada.
+async function buildWorkbook() {
   const barber = await usersRepository.findBarber();
-  if (!barber) return;
+  if (!barber) return null;
 
   const zone = env.barbershopTimezone;
   const windowStart = DateTime.now().setZone(zone).startOf('week'); // segunda
@@ -101,6 +105,21 @@ export async function syncNow() {
     });
   }
 
+  return workbook;
+}
+
+// Gera o arquivo EM MEMÓRIA (para o download sob demanda — sempre atual, sem
+// depender de disco). Retorna null se ainda não há barbeiro configurado.
+export async function generateBuffer() {
+  const workbook = await buildWorkbook();
+  if (!workbook) return null;
+  return workbook.xlsx.writeBuffer();
+}
+
+// Escreve o espelho em disco (só quando EXCEL_MIRROR_ENABLED).
+export async function syncNow() {
+  const workbook = await buildWorkbook();
+  if (!workbook) return;
   await mkdir(path.dirname(env.excelFilePath), { recursive: true });
   await workbook.xlsx.writeFile(env.excelFilePath);
 }

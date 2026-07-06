@@ -1,12 +1,12 @@
 import env from '../config/env.js';
 
-// httpOnly: JS do front nunca lê o token (mitiga XSS). SameSite=Lax bloqueia
-// envio em requisições cross-site (mitiga CSRF). Secure só em produção
-// porque o dev local roda em http.
+// httpOnly: JS do front nunca lê o token (mitiga XSS). SameSite controla o
+// envio cross-site: 'lax' em dev; 'none' em produção quando front e back estão
+// em domínios diferentes (exige Secure). Secure só em produção (dev roda http).
 const baseOptions = {
   httpOnly: true,
   secure: env.nodeEnv === 'production',
-  sameSite: 'lax',
+  sameSite: env.cookieSameSite,
 };
 
 export function setAuthCookies(res, { accessToken, refreshToken }) {

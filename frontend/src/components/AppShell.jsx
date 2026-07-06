@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 
 import { Brand } from './Brand.jsx';
 import { Button } from './Button.jsx';
+import { ThemeToggle } from './ThemeToggle.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export function AppShell({ children }) {
@@ -17,6 +18,7 @@ export function AppShell({ children }) {
           <Link to="/perfil" className="topbar__link" data-testid="nav-perfil">
             Perfil
           </Link>
+          <ThemeToggle />
           <Button variant="ghost" data-testid="logout" onClick={logout}>
             Sair
           </Button>

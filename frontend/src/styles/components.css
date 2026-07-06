@@ -4,20 +4,16 @@
   align-items: center;
   justify-content: center;
   gap: var(--s-2);
-  padding: 13px 20px;
+  padding: 12px 20px;
   border: 1px solid transparent;
   border-radius: var(--radius);
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.btn:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
+  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease,
+    transform 0.08s ease, box-shadow 0.16s ease;
 }
 
 .btn:disabled {
@@ -26,26 +22,39 @@
 }
 
 .btn--primary {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--accent);
+  color: var(--accent-contrast);
 }
 
 .btn--primary:hover:not(:disabled) {
-  background: #2c2c2c;
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn--primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .btn--ghost {
   background: transparent;
-  border-color: var(--ink);
-  color: var(--ink);
+  border-color: var(--border-hover);
+  color: var(--text);
 }
 
 .btn--ghost:hover:not(:disabled) {
-  background: var(--gray-100);
+  background: var(--overlay-hover);
+  border-color: var(--text);
 }
 
 .btn--block {
   width: 100%;
+}
+
+.btn--small {
+  padding: 8px 14px;
+  font-size: 13px;
 }
 
 /* ── Campos de formulário ───────────────────────────────── */
@@ -57,29 +66,36 @@
 .field__label {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
-  color: var(--gray-600);
+  color: var(--text-muted);
 }
 
 .field__input {
   padding: 12px 14px;
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--paper);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.25s ease;
 }
 
 .field__input::placeholder {
-  color: var(--gray-400);
+  color: var(--text-subtle);
+}
+
+.field__input:hover {
+  border-color: var(--border-hover);
 }
 
 .field__input:focus {
   outline: none;
-  border-color: var(--ink);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--ring);
 }
 
 .field__input--error {
-  border-color: var(--ink);
+  border-color: var(--accent);
 }
 
 .field__error {
@@ -94,20 +110,33 @@
 }
 
 .form-error {
-  border: 1px solid var(--ink);
-  border-left-width: 4px;
-  padding: 10px 14px;
+  border: 1px solid var(--accent);
+  border-left-width: 3px;
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  padding: 11px 14px;
   font-size: 13px;
+  font-weight: 500;
 }
 
 /* ── Abas editoriais ────────────────────────────────────── */
 .tabs {
   display: flex;
   gap: var(--s-5);
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--border);
+  /* rolagem horizontal (painel do barbeiro no mobile) sem barra vertical
+     parasita — overflow-y:hidden evita a promoção de overflow-x:auto */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tab {
+  position: relative;
   background: none;
   border: none;
   padding: 0 0 12px;
@@ -115,18 +144,45 @@
   border-bottom: 2px solid transparent;
   font-size: 14px;
   font-weight: 600;
-  color: var(--gray-400);
+  white-space: nowrap;
+  color: var(--text-subtle);
   cursor: pointer;
+  transition: color 0.16s ease, border-color 0.16s ease;
+}
+
+.tab:hover {
+  color: var(--text-muted);
 }
 
 .tab--active {
-  color: var(--ink);
-  border-bottom-color: var(--ink);
+  color: var(--text);
+  border-bottom-color: var(--accent);
 }
 
-.tab:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
+/* ── Alternância de tema ────────────────────────────────── */
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.16s ease, border-color 0.16s ease, background-color 0.16s ease;
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+  border-color: var(--border-hover);
+  background: var(--overlay-hover);
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* ── Marca ──────────────────────────────────────────────── */
@@ -137,24 +193,32 @@
 .brand__name {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 40px;
-  letter-spacing: -0.02em;
+  font-size: 42px;
+  letter-spacing: -0.03em;
 }
 
 .brand__sub {
   font-size: 11px;
-  letter-spacing: 0.35em;
+  letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: var(--gray-600);
-  margin-top: var(--s-1);
+  color: var(--text-muted);
+  margin-top: var(--s-2);
+  padding-left: 0.4em;
 }
 
 /* ── Layout da tela de auth ─────────────────────────────── */
 .auth {
+  position: relative;
   min-height: 100dvh;
   display: grid;
   place-items: center;
   padding: var(--s-5);
+}
+
+.auth__top {
+  position: absolute;
+  top: var(--s-5);
+  right: var(--s-5);
 }
 
 .auth__box {
@@ -162,28 +226,39 @@
   max-width: 400px;
   display: grid;
   gap: var(--s-6);
+  padding: clamp(24px, 5vw, 40px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .auth__hint {
   text-align: center;
   font-size: 12px;
-  letter-spacing: 0.08em;
-  color: var(--gray-400);
+  letter-spacing: 0.06em;
+  color: var(--text-subtle);
 }
 
 /* ── Casca do app (páginas autenticadas) ────────────────── */
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--s-4) var(--s-5);
-  border-bottom: 1px solid var(--gray-200);
+  gap: var(--s-4);
+  padding: var(--s-4) var(--page-x);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .topbar__brand {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 18px;
+  font-size: 19px;
   letter-spacing: -0.01em;
 }
 
@@ -195,36 +270,42 @@
 .topbar__nav {
   display: flex;
   align-items: center;
-  gap: var(--s-4);
+  gap: var(--s-3);
 }
 
 .topbar__link {
   font-size: 14px;
   font-weight: 500;
-  color: var(--gray-600);
+  color: var(--text-muted);
   text-decoration: none;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  transition: color 0.16s ease, background-color 0.16s ease;
 }
 
 .topbar__link:hover {
-  color: var(--ink);
+  color: var(--text);
+  background: var(--overlay-hover);
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 48px) var(--page-x);
+  display: grid;
+  gap: var(--s-4);
 }
 
 .profile-form {
   max-width: 400px;
 }
 
-.page {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: var(--s-7) var(--s-5);
-  display: grid;
-  gap: var(--s-3);
-}
-
-/* ── Cartão (bordas finas, sem sombra) ──────────────────── */
+/* ── Cartão ──────────────────────────────────────────────── */
 .card {
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
   padding: var(--s-5);
 }
 
@@ -232,29 +313,33 @@
 .section {
   display: grid;
   gap: var(--s-4);
-  padding-top: var(--s-5);
-  border-top: 1px solid var(--gray-200);
-  margin-top: var(--s-4);
+  padding-top: var(--s-6);
+  border-top: 1px solid var(--border);
+  margin-top: var(--s-3);
 }
 
 .section__title {
-  font-size: 20px;
+  font-size: 21px;
 }
 
 .section__sub {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
-  color: var(--gray-600);
+  color: var(--text-muted);
   margin-top: var(--s-2);
 }
 
 /* ── Aviso neutro (sucesso/informação — P&B) ────────────── */
 .banner {
-  border: 1px solid var(--ink);
-  padding: 10px 14px;
+  border: 1px solid var(--accent);
+  border-left-width: 3px;
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  padding: 11px 14px;
   font-size: 13px;
+  font-weight: 500;
 }
 
 /* ── Lista de serviços (seleção múltipla) ───────────────── */
@@ -269,14 +354,20 @@
   align-items: center;
   gap: var(--s-3);
   padding: 14px 16px;
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
+  background: var(--surface);
   cursor: pointer;
+  transition: border-color 0.16s ease, background-color 0.16s ease;
+}
+
+.service-item:hover {
+  border-color: var(--border-hover);
 }
 
 .service-item--on {
-  border-color: var(--ink);
-  background: var(--gray-100);
+  border-color: var(--accent);
+  background: var(--surface-sunken);
 }
 
 .service-item__input {
@@ -287,19 +378,33 @@
 }
 
 .service-item__check {
-  width: 16px;
-  height: 16px;
-  border: 1px solid var(--ink);
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--border-hover);
   border-radius: var(--radius);
-  background: var(--paper);
+  background: var(--surface);
+  transition: border-color 0.16s ease, background-color 0.16s ease;
 }
 
 .service-item--on .service-item__check {
-  background: var(--ink);
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.service-item--on .service-item__check::after {
+  content: '';
+  width: 5px;
+  height: 9px;
+  margin-top: -2px;
+  border: solid var(--accent-contrast);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 .service-item__input:focus-visible ~ .service-item__check {
-  outline: 2px solid var(--ink);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -309,39 +414,40 @@
 
 .service-item__meta {
   font-size: 13px;
-  color: var(--gray-600);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Grade de horários ──────────────────────────────────── */
 .slot-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
   gap: var(--s-2);
 }
 
 .slot {
-  padding: 10px 0;
-  border: 1px solid var(--gray-200);
+  padding: 11px 0;
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--paper);
+  background: var(--surface);
+  color: var(--text);
   font-size: 14px;
   font-weight: 500;
+  font-variant-numeric: tabular-nums;
   cursor: pointer;
+  transition: border-color 0.16s ease, background-color 0.16s ease, color 0.16s ease,
+    transform 0.08s ease;
 }
 
 .slot:hover {
-  border-color: var(--ink);
+  border-color: var(--accent);
+  transform: translateY(-1px);
 }
 
 .slot--on {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
-}
-
-.slot:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
 }
 
 /* ── Barra de confirmação ───────────────────────────────── */
@@ -351,9 +457,15 @@
   justify-content: space-between;
   gap: var(--s-4);
   flex-wrap: wrap;
-  border: 1px solid var(--ink);
-  border-radius: var(--radius);
-  padding: var(--s-4);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+  padding: var(--s-4) var(--s-5);
+}
+
+.confirm-bar .tnum,
+.confirm-bar strong {
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Lista de agendamentos ──────────────────────────────── */
@@ -368,37 +480,43 @@
   justify-content: space-between;
   gap: var(--s-4);
   flex-wrap: wrap;
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
+  background: var(--surface);
   padding: 14px 16px;
+  transition: border-color 0.16s ease;
+}
+
+.appt:hover {
+  border-color: var(--border-hover);
 }
 
 .appt__when {
   font-size: 15px;
+  font-variant-numeric: tabular-nums;
 }
 
 .appt__status {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
-  color: var(--gray-400);
+  color: var(--text-subtle);
+}
+
+.appt__actions {
+  display: flex;
+  gap: var(--s-2);
 }
 
 .history summary {
   font-size: 13px;
-  color: var(--gray-600);
+  color: var(--text-muted);
   cursor: pointer;
 }
 
 .history[open] summary {
   margin-bottom: var(--s-3);
-}
-
-/* ── Miudezas ───────────────────────────────────────────── */
-.btn--small {
-  padding: 8px 14px;
-  font-size: 13px;
 }
 
 .date-input {
@@ -419,23 +537,27 @@
 }
 
 .stat {
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
   padding: var(--s-4) var(--s-5);
-  min-width: 120px;
+  min-width: 128px;
 }
 
 .stat__num {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 28px;
+  font-size: 30px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  margin-bottom: 6px;
 }
 
 .stat__label {
   font-size: 11px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
-  color: var(--gray-600);
+  color: var(--text-muted);
 }
 
 .day-nav {
@@ -445,9 +567,16 @@
   flex-wrap: wrap;
 }
 
-.appt__actions {
+.excel-bar {
   display: flex;
-  gap: var(--s-2);
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+
+.excel-bar__hint {
+  font-size: 12px;
+  min-width: 0;
 }
 
 .form-row {
@@ -466,10 +595,10 @@
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  border: 1px solid var(--gray-400);
-  color: var(--gray-600);
+  border: 1px solid var(--border-hover);
+  color: var(--text-muted);
   padding: 2px 8px;
-  border-radius: var(--radius);
+  border-radius: 999px;
   margin-left: var(--s-2);
 }
 
@@ -477,6 +606,7 @@
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 16px;
+  letter-spacing: -0.01em;
 }
 
 .hours-row {
@@ -484,12 +614,12 @@
   gap: var(--s-3);
   align-items: center;
   flex-wrap: wrap;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--gray-100);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
 }
 
 .hours-row__day {
-  width: 120px;
+  width: 128px;
   display: flex;
   gap: var(--s-2);
   align-items: center;
@@ -503,8 +633,93 @@
   min-height: 100dvh;
   display: grid;
   place-items: center;
-  font-size: 13px;
-  letter-spacing: 0.2em;
+  font-size: 12px;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--gray-400);
+  color: var(--text-subtle);
+}
+
+/* ── Proteções contra vazamento horizontal ──────────────── */
+/* Itens flex não encolhem abaixo do conteúdo sem min-width:0 — sem isso,
+   nomes/e-mails longos empurram a largura e criam rolagem lateral no mobile. */
+.appt > div,
+.confirm-bar > div {
+  min-width: 0;
+}
+
+.appt,
+.confirm-bar {
+  overflow-wrap: break-word;
+}
+
+/* ── Mobile (uso principal do app) ──────────────────────── */
+@media (max-width: 640px) {
+  /* Alvos de toque mais generosos */
+  .btn--small {
+    padding: 10px 14px;
+  }
+
+  .topbar__nav {
+    gap: var(--s-2);
+  }
+
+  /* Formulários do painel: um campo por linha + botão de largura total */
+  .form-row .field {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .form-row > .btn {
+    width: 100%;
+  }
+
+  /* Barra de confirmação do agendamento: resumo em cima, CTA full-width */
+  .confirm-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .confirm-bar > .btn {
+    width: 100%;
+  }
+
+  /* Botões do perfil ocupam a largura para facilitar o toque */
+  .profile-form div > .btn {
+    width: 100%;
+  }
+
+  /* Estatísticas dividem a linha igualmente */
+  .stat {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  /* Navegação de dia: a data cresce, as setas ficam ao lado */
+  .day-nav .date-input {
+    flex: 1 1 120px;
+    max-width: none;
+  }
+
+  /* Abas do painel: de ponta a ponta e roláveis lateralmente (4 abas > tela) */
+  .page > .tabs {
+    gap: var(--s-4);
+    margin-inline: calc(-1 * var(--page-x));
+    padding-inline: var(--page-x);
+    scroll-padding-inline: var(--page-x);
+    scroll-snap-type: x proximity;
+  }
+
+  .page > .tabs .tab {
+    padding-top: 4px;
+    scroll-snap-align: start;
+  }
+
+  /* Horário de funcionamento: o dia numa linha, a faixa de horas embaixo */
+  .hours-row {
+    align-items: flex-start;
+  }
+
+  .hours-row__day {
+    width: 100%;
+  }
 }

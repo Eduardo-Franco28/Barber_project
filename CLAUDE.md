@@ -223,6 +223,13 @@ sem elementos tipo navalha/listras retrô).
 - **Cores:** apenas preto (`#000000` ou próximo) e branco (`#FFFFFF`), sem
   paleta colorida de apoio. Tons de cinza permitidos como intermediários
   (bordas, texto secundário, estados disabled), mas a identidade é P&B puro.
+- **Tema claro/escuro (2026-07-04):** a mesma identidade P&B em dois modos,
+  via `data-theme` no `<html>` + tokens semânticos em `tokens.css`
+  (`--bg/--surface/--text/--border/--accent`…). O modo escuro é o P&B
+  invertido (fundo quase-preto, ação quase-branca), não uma paleta nova.
+  Alternância por um botão no topo (sol/lua), respeitando `prefers-color-scheme`
+  no primeiro acesso e persistindo a escolha em `localStorage` (script
+  anti-flash no `index.html`).
 - **Tipografia:** confirmada (2026-07-03): **Space Grotesk** (títulos/marca)
   + **Inter** (texto/UI), via Google Fonts. Hierarquia bem marcada por peso e
   tamanho, não por cor.
@@ -352,6 +359,26 @@ sem elementos tipo navalha/listras retrô).
   `backend/data/agenda.xlsx`, ignorado no git); fixos aparecem com o nome do
   cliente, bloqueios em cinza itálico com o motivo, cancelado some da célula;
   `done` continua exibido (o atendimento aconteceu).
+- Redesign + tema claro/escuro (2026-07-04): visual elevado mantendo o P&B
+  editorial — superfícies com profundidade sutil (bg off-white / cards
+  brancos no claro; quase-preto / cards levemente elevados no escuro),
+  tipografia mais forte, números tabulares (horários/preços/estatísticas),
+  micro-interações (hover/press nos botões e slots), topbar fixa. Sistema de
+  temas por `data-theme` + tokens semânticos; toggle sol/lua no topo (e no
+  canto do login), `prefers-color-scheme` no 1º acesso, persistido em
+  localStorage, script anti-flash no index.html. `color-scheme` por tema faz
+  os controles nativos (date/time/checkbox) adotarem o modo. Verificado no
+  navegador nos dois temas (login, agenda do cliente, painel do barbeiro).
+- Otimização mobile (2026-07-04): mobile é o **principal meio de uso**.
+  Refinos em `@media (max-width: 640px)`: formulários do painel empilham (1
+  campo por linha) com botão full-width; barra de confirmação do agendamento
+  empilha (resumo em cima, CTA full-width); abas do painel sangram até as
+  bordas (`--page-x`) e rolam lateralmente (4 abas > tela); horário de
+  funcionamento com o dia numa linha e "09:00 às 19:00" abaixo; estatísticas
+  dividem a linha igualmente; alvos de toque maiores. Proteções contra
+  vazamento horizontal (min-width:0 em itens flex de texto). Sem rolagem
+  horizontal da página de 320px pra cima; verificado no navegador em 375px e
+  320px, console limpo.
 - Notificações WhatsApp (2026-07-04): Evolution API com **modo simulado** por
   padrão — sem `EVOLUTION_API_URL/API_KEY/INSTANCE` no `.env`, as mensagens
   vão para o log e nada é enviado (dá para desenvolver sem servidor); ativar é
@@ -363,3 +390,15 @@ sem elementos tipo navalha/listras retrô).
   agendamentos criados já dentro da janela de 2h; telefones ganham prefixo 55;
   precisa da migration 0003 (coluna `reminder_sent_at`) — sem ela a
   confirmação funciona e o job só loga aviso.
+- Download da planilha + deploy (2026-07-06): `GET /spreadsheet` (barber-only)
+  gera o xlsx **em memória na hora** (`excel.service.generateBuffer`) e envia
+  como download — sempre a versão atual; "atualizar" = baixar de novo (um
+  arquivo salvo é uma foto; a agenda do app é a versão ao vivo). Botão "Baixar
+  planilha" na aba Agenda (fetch com credentials + refresh no 401 → blob). O
+  espelho em disco virou opcional (`EXCEL_MIRROR_ENABLED`, desligar no Render).
+  Prontidão p/ Vercel(front)+Render(back): CORS multi-origem por env, cookie
+  `SameSite=None`+Secure em produção (`COOKIE_SAMESITE` p/ sobrescrever),
+  `trust proxy` em prod; `frontend/vercel.json` (rewrite SPA); guia em
+  `DEPLOY.md`. Caveats documentados: Render free dorme (lembrete ~2h pode
+  pular), e cookie de terceiros pode falhar no Safari/iOS → recomendado
+  domínio próprio (api. + app.) para cookie same-site.

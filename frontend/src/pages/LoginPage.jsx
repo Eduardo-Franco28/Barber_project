@@ -5,6 +5,7 @@ import { ApiError } from '../api/client.js';
 import { Brand } from '../components/Brand.jsx';
 import { Button } from '../components/Button.jsx';
 import { Field } from '../components/Field.jsx';
+import { ThemeToggle } from '../components/ThemeToggle.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const EMPTY_FORM = { name: '', email: '', phone: '', password: '' };
@@ -59,6 +60,9 @@ export function LoginPage() {
 
   return (
     <div className="auth">
+      <div className="auth__top">
+        <ThemeToggle />
+      </div>
       <div className="auth__box">
         <Brand />
 
