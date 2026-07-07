@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 const ThemeContext = createContext(null);
 
 // Prioridade: o que o script anti-flash já pôs no <html> → localStorage →
-// preferência do sistema → claro.
+// padrão do site (escuro).
 function getInitialTheme() {
   const attr = document.documentElement.getAttribute('data-theme');
   if (attr === 'dark' || attr === 'light') return attr;
@@ -11,9 +11,9 @@ function getInitialTheme() {
     const stored = localStorage.getItem('theme');
     if (stored === 'dark' || stored === 'light') return stored;
   } catch {
-    /* localStorage indisponível — segue para a preferência do sistema */
+    /* localStorage indisponível — cai no padrão */
   }
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return 'dark';
 }
 
 export function ThemeProvider({ children }) {

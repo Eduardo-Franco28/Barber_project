@@ -95,12 +95,59 @@
 }
 
 .field__input--error {
-  border-color: var(--accent);
+  border-color: var(--danger);
+}
+
+.field__input--error:focus {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px var(--danger-bg);
 }
 
 .field__error {
   font-size: 12px;
   font-weight: 500;
+  color: var(--danger);
+}
+
+/* Campo com botão de mostrar/ocultar senha */
+.field__control {
+  position: relative;
+}
+
+.field__control .field__input {
+  width: 100%;
+}
+
+.field__input--with-toggle {
+  padding-right: 44px;
+}
+
+.field__toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-subtle);
+  cursor: pointer;
+  transition: color 0.16s ease, background-color 0.16s ease;
+}
+
+.field__toggle:hover {
+  color: var(--text);
+  background: var(--overlay-hover);
+}
+
+.field__toggle svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* ── Formulário / erro geral (P&B: erro em preto, sem vermelho) ── */
@@ -110,10 +157,11 @@
 }
 
 .form-error {
-  border: 1px solid var(--accent);
+  border: 1px solid var(--danger);
   border-left-width: 3px;
   border-radius: var(--radius);
-  background: var(--surface-sunken);
+  background: var(--danger-bg);
+  color: var(--danger);
   padding: 11px 14px;
   font-size: 13px;
   font-weight: 500;

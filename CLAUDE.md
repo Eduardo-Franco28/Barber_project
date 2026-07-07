@@ -223,6 +223,14 @@ sem elementos tipo navalha/listras retrô).
 - **Cores:** apenas preto (`#000000` ou próximo) e branco (`#FFFFFF`), sem
   paleta colorida de apoio. Tons de cinza permitidos como intermediários
   (bordas, texto secundário, estados disabled), mas a identidade é P&B puro.
+- **Modo escuro é o padrão (2026-07-06):** por pedido do usuário, o site abre
+  no modo escuro no primeiro acesso (fallback = dark; a escolha do usuário
+  ainda é lembrada em localStorage). Não respeita mais o `prefers-color-scheme`.
+- **Erros de validação em vermelho (2026-07-06):** por pedido explícito do
+  usuário, mensagens de erro agora são **vermelhas e no próprio campo** (token
+  `--danger`, único desvio do P&B; legível nos dois temas) — revoga a decisão
+  anterior de "erro em preto". Mensagens de cadastro reescritas para serem
+  intuitivas (dizem o que corrigir: nome/e-mail/WhatsApp/senha).
 - **Tema claro/escuro (2026-07-04):** a mesma identidade P&B em dois modos,
   via `data-theme` no `<html>` + tokens semânticos em `tokens.css`
   (`--bg/--surface/--text/--border/--accent`…). O modo escuro é o P&B

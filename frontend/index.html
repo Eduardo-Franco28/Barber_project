@@ -10,12 +10,11 @@
       // para não haver flash de tema errado ao carregar.
       (function () {
         try {
+          // Padrão do site é o modo escuro; respeita a escolha salva do usuário.
           var saved = localStorage.getItem('theme');
-          var theme =
-            saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.setAttribute('data-theme', saved || 'dark');
         } catch (e) {
-          document.documentElement.setAttribute('data-theme', 'light');
+          document.documentElement.setAttribute('data-theme', 'dark');
         }
       })();
     </script>

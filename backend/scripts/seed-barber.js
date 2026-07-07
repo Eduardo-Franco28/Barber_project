@@ -14,8 +14,8 @@ if (!name || !email || !password || !phone) {
   console.error('Uso: node scripts/seed-barber.js "Nome" email senha telefone');
   process.exit(1);
 }
-if (password.length < 8) {
-  console.error('A senha deve ter pelo menos 8 caracteres.');
+if (password.length < 6) {
+  console.error('A senha deve ter pelo menos 6 caracteres.');
   process.exit(1);
 }
 

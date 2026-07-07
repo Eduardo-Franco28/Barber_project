@@ -31,6 +31,10 @@
   --shadow-sm: 0 1px 2px rgba(9, 9, 11, 0.05), 0 1px 3px rgba(9, 9, 11, 0.05);
   --shadow-md: 0 10px 28px -8px rgba(9, 9, 11, 0.14);
 
+  /* Erro (única cor fora do P&B, a pedido do usuário — mensagens de validação) */
+  --danger: #dc2626;
+  --danger-bg: #fef2f2;
+
   /* Tipografia */
   --font-display: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
@@ -81,6 +85,9 @@
   --overlay-hover: rgba(245, 245, 246, 0.07);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
   --shadow-md: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.12);
 
   color-scheme: dark;
 }

@@ -90,7 +90,7 @@ export function LoginPage() {
         </div>
 
         <form className="form" onSubmit={handleSubmit} noValidate>
-          {formError && (
+          {formError && Object.keys(fieldErrors).length === 0 && (
             <div className="form-error" data-testid="form-error" role="alert">
               {formError}
             </div>
