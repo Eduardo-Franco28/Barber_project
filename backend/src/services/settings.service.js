@@ -8,8 +8,8 @@ export async function get(barberId) {
   return settings ?? { barber_id: barberId, default_slot_minutes: DEFAULT_SLOT_MINUTES, updated_at: null };
 }
 
-export async function update(barberId, { default_slot_minutes: defaultSlotMinutes }) {
-  const saved = await settingsRepository.upsert(barberId, {
+export async function update(barbershopId, barberId, { default_slot_minutes: defaultSlotMinutes }) {
+  const saved = await settingsRepository.upsert(barbershopId, barberId, {
     default_slot_minutes: defaultSlotMinutes,
   });
   excelService.scheduleSync(); // a grade de linhas da planilha muda junto

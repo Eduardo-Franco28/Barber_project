@@ -7,8 +7,12 @@ export async function list(barberId) {
   return fixedAppointmentsRepository.findAllByBarber(barberId);
 }
 
-export async function create(barberId, fields) {
-  const created = await fixedAppointmentsRepository.create({ barber_id: barberId, ...fields });
+export async function create(barbershopId, barberId, fields) {
+  const created = await fixedAppointmentsRepository.create({
+    barbershop_id: barbershopId,
+    barber_id: barberId,
+    ...fields,
+  });
   excelService.scheduleSync();
   return created;
 }

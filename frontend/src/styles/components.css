@@ -466,6 +466,35 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ── Escolha do barbeiro ────────────────────────────────── */
+.barber-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.barber-item {
+  padding: 10px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.16s ease, background-color 0.16s ease, color 0.16s ease;
+}
+
+.barber-item:hover {
+  border-color: var(--accent);
+}
+
+.barber-item--on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
 /* ── Grade de horários ──────────────────────────────────── */
 .slot-grid {
   display: grid;

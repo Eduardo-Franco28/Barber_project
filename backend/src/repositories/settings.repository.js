@@ -16,11 +16,29 @@ export async function findByBarberId(barberId) {
   return data;
 }
 
-export async function upsert(barberId, fields) {
+// Cria a configuração padrão de um barbeiro (usado no onboarding).
+export async function createDefaults(barbershopId, barberId, defaultSlotMinutes = 50) {
+  const { error } = await supabase.from('settings').insert({
+    barbershop_id: barbershopId,
+    barber_id: barberId,
+    default_slot_minutes: defaultSlotMinutes,
+  });
+
+  if (error) {
+    throw new Error(`Criação de settings falhou: ${error.message}`);
+  }
+}
+
+export async function upsert(barbershopId, barberId, fields) {
   const { data, error } = await supabase
     .from('settings')
     .upsert(
-      { barber_id: barberId, ...fields, updated_at: new Date().toISOString() },
+      {
+        barbershop_id: barbershopId,
+        barber_id: barberId,
+        ...fields,
+        updated_at: new Date().toISOString(),
+      },
       { onConflict: 'barber_id' }
     )
     .select(COLUMNS)

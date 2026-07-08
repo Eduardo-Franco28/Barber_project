@@ -6,20 +6,22 @@ import { requireRole } from '../middlewares/require-role.js';
 import { validate } from '../middlewares/validate.js';
 import { createServiceSchema, updateServiceSchema } from '../validators/services.schemas.js';
 
+// Gestão dos serviços do próprio barbeiro (dono ou barbeiro). O cliente vê os
+// serviços de um barbeiro em GET /barbers/:barberId/services.
 const router = Router();
 
-router.get('/', authenticate, servicesController.list);
+router.get('/', authenticate, requireRole('owner', 'barber'), servicesController.listOwn);
 router.post(
   '/',
   authenticate,
-  requireRole('barber'),
+  requireRole('owner', 'barber'),
   validate(createServiceSchema),
   servicesController.create
 );
 router.patch(
   '/:id',
   authenticate,
-  requireRole('barber'),
+  requireRole('owner', 'barber'),
   validate(updateServiceSchema),
   servicesController.update
 );

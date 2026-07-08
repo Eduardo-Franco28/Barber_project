@@ -1,50 +1,28 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
+import { BarbershopLayout } from './components/BarbershopLayout.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
-import { useAuth } from './context/AuthContext.jsx';
-import { BarberHome } from './pages/BarberHome.jsx';
-import { ClientHome } from './pages/ClientHome.jsx';
-import { LoginPage } from './pages/LoginPage.jsx';
+import { Landing } from './pages/Landing.jsx';
 import { ProfilePage } from './pages/ProfilePage.jsx';
-
-function HomeRedirect() {
-  const { user, loading } = useAuth();
-
-  if (loading) return <div className="boot">Bryan Barbearia</div>;
-  if (!user) return <Navigate to="/login" replace />;
-  return <Navigate to={user.role === 'barber' ? '/painel' : '/agendar'} replace />;
-}
+import { ShopEntry } from './pages/ShopEntry.jsx';
 
 export function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route
-          path="/agendar"
-          element={
-            <ProtectedRoute role="client">
-              <ClientHome />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/painel"
-          element={
-            <ProtectedRoute role="barber">
-              <BarberHome />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/perfil"
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/" element={<HomeRedirect />} />
+        {/* Tudo do cliente/dono acontece dentro de uma barbearia (/b/:slug). */}
+        <Route path="/b/:slug" element={<BarbershopLayout />}>
+          <Route index element={<ShopEntry />} />
+          <Route
+            path="perfil"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+        <Route path="/" element={<Landing />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

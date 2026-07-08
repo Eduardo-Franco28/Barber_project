@@ -6,6 +6,10 @@ export async function list(req, res) {
 }
 
 export async function update(req, res) {
-  const businessHours = await businessHoursService.update(req.user.id, req.body.days);
+  const businessHours = await businessHoursService.update(
+    req.user.barbershopId,
+    req.user.id,
+    req.body.days
+  );
   res.status(200).json({ business_hours: businessHours });
 }

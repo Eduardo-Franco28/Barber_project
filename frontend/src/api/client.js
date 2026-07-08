@@ -38,8 +38,9 @@ export async function api(path, options) {
   try {
     return await doFetch(path, options);
   } catch (err) {
+    // includes (não startsWith): o login/cadastro agora é /b/:slug/auth/login.
     const retryable =
-      err instanceof ApiError && err.status === 401 && !AUTH_PATHS.some((p) => path.startsWith(p));
+      err instanceof ApiError && err.status === 401 && !AUTH_PATHS.some((p) => path.includes(p));
     if (!retryable) throw err;
 
     try {

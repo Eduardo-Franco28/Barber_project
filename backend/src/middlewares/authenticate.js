@@ -14,6 +14,10 @@ export function authenticate(req, _res, next) {
     throw new AppError(401, 'Não autenticado.');
   }
 
-  req.user = { id: payload.sub, role: payload.role };
+  req.user = {
+    id: payload.sub,
+    role: payload.role,
+    barbershopId: payload.barbershop_id,
+  };
   next();
 }

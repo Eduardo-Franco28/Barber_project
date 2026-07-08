@@ -7,7 +7,7 @@ const XLSX_MIME =
 // Gera a planilha na hora, a partir do banco → o download é SEMPRE a versão
 // mais atual. Baixar de novo é o que "atualiza" o arquivo do barbeiro.
 export async function download(req, res) {
-  const buffer = await excelService.generateBuffer();
+  const buffer = await excelService.generateBuffer(req.user.id);
   if (!buffer) {
     throw new AppError(503, 'Barbearia ainda não configurada.');
   }

@@ -8,7 +8,7 @@ import { updateSettingsSchema } from '../validators/barber.schemas.js';
 
 const router = Router();
 
-router.use(authenticate, requireRole('barber'));
+router.use(authenticate, requireRole('owner', 'barber'));
 
 router.get('/', settingsController.get);
 router.patch('/', validate(updateSettingsSchema), settingsController.update);

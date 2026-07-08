@@ -1,13 +1,10 @@
 import { api } from './client.js';
 
-export function getAvailability(date, serviceIds) {
-  return api(`/availability?date=${date}&service_ids=${serviceIds.join(',')}`);
-}
-
-export function createAppointment({ serviceIds, date, time }) {
+// Marcar (autenticado) — o barbeiro escolhido vai no corpo.
+export function createAppointment({ barberId, serviceIds, date, time }) {
   return api('/appointments', {
     method: 'POST',
-    body: { service_ids: serviceIds, date, time },
+    body: { barber_id: barberId, service_ids: serviceIds, date, time },
   });
 }
 

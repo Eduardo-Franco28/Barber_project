@@ -10,7 +10,7 @@ export async function list(barberId) {
   return blockedTimesRepository.findUpcomingByBarber(barberId, new Date().toISOString());
 }
 
-export async function create(barberId, { start_date, start_time, end_date, end_time, reason }) {
+export async function create(barbershopId, barberId, { start_date, start_time, end_date, end_time, reason }) {
   const zone = env.barbershopTimezone;
   const start = DateTime.fromISO(`${start_date}T${start_time}`, { zone });
   const end = DateTime.fromISO(`${end_date}T${end_time}`, { zone });
@@ -23,6 +23,7 @@ export async function create(barberId, { start_date, start_time, end_date, end_t
   }
 
   const created = await blockedTimesRepository.create({
+    barbershop_id: barbershopId,
     barber_id: barberId,
     start_at: start.toUTC().toISO(),
     end_at: end.toUTC().toISO(),

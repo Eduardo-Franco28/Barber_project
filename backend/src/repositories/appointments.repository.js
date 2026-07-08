@@ -4,6 +4,7 @@ import { AppError } from '../utils/app-error.js';
 const COLUMNS = 'id, client_id, barber_id, start_at, end_at, status, created_at';
 
 const WITH_SERVICES = `${COLUMNS},
+  barbershop:barbershops ( name ),
   appointment_services ( service:services ( id, name, price, duration_minutes ) )`;
 
 const WITH_SERVICES_AND_CLIENT = `${WITH_SERVICES},
@@ -162,6 +163,7 @@ export async function findNeedingReminder(nowIso, untilIso) {
     .from('appointments')
     .select(
       `id, start_at, created_at,
+       barbershop:barbershops ( name ),
        client:users!appointments_client_id_fkey ( name, phone ),
        barber:users!appointments_barber_id_fkey ( name, phone ),
        appointment_services ( service:services ( name ) )`

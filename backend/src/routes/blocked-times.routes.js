@@ -8,7 +8,7 @@ import { createBlockedTimeSchema } from '../validators/barber.schemas.js';
 
 const router = Router();
 
-router.use(authenticate, requireRole('barber'));
+router.use(authenticate, requireRole('owner', 'barber'));
 
 router.get('/', blockedTimesController.list);
 router.post('/', validate(createBlockedTimeSchema), blockedTimesController.create);

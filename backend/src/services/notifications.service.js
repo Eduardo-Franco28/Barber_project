@@ -23,22 +23,23 @@ export async function notifyAppointmentCreated(appointment) {
   try {
     const [client, barber] = await Promise.all([
       usersRepository.findById(appointment.client_id),
-      usersRepository.findBarber(),
+      usersRepository.findById(appointment.barber_id),
     ]);
     const { data, hora } = formatWhen(appointment.start_at);
     const servicos = joinServiceNames(appointment.services);
+    const shop = appointment.barbershop?.name ?? 'Barbearia';
 
     if (client?.phone) {
       await whatsappService.sendMessage(
         client.phone,
-        `Bryan Barbearia: horário confirmado! ${data} às ${hora} — ${servicos}. ` +
+        `${shop}: horário confirmado! ${data} às ${hora} — ${servicos}. ` +
           'Se precisar, cancele pelo app até 2h antes.'
       );
     }
     if (barber?.phone) {
       await whatsappService.sendMessage(
         barber.phone,
-        `Bryan Barbearia: novo agendamento — ${client?.name ?? 'cliente'}, ${data} às ${hora} (${servicos}).`
+        `${shop}: novo agendamento — ${client?.name ?? 'cliente'}, ${data} às ${hora} (${servicos}).`
       );
     }
   } catch (err) {
@@ -92,17 +93,18 @@ export async function runReminderTick() {
       const servicos = joinServiceNames(
         appointment.appointment_services?.map((item) => item.service)
       );
+      const shop = appointment.barbershop?.name ?? 'Barbearia';
 
       if (appointment.client?.phone) {
         await whatsappService.sendMessage(
           appointment.client.phone,
-          `Bryan Barbearia: lembrete! Seu horário é ${data} às ${hora} — ${servicos}. Até já!`
+          `${shop}: lembrete! Seu horário é ${data} às ${hora} — ${servicos}. Até já!`
         );
       }
       if (appointment.barber?.phone) {
         await whatsappService.sendMessage(
           appointment.barber.phone,
-          `Bryan Barbearia: em ~2h — ${appointment.client?.name ?? 'cliente'} às ${hora} (${servicos}).`
+          `${shop}: em ~2h — ${appointment.client?.name ?? 'cliente'} às ${hora} (${servicos}).`
         );
       }
     } catch (err) {

@@ -1,7 +1,7 @@
 import * as appointmentsService from '../services/appointments.service.js';
 
 export async function create(req, res) {
-  const appointment = await appointmentsService.create(req.user.id, req.body);
+  const appointment = await appointmentsService.create(req.user, req.body);
   res.status(201).json({ appointment });
 }
 

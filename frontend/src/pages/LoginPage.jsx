@@ -1,25 +1,23 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
 
 import { ApiError } from '../api/client.js';
-import { Brand } from '../components/Brand.jsx';
 import { Button } from '../components/Button.jsx';
 import { Field } from '../components/Field.jsx';
 import { ThemeToggle } from '../components/ThemeToggle.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useBarbershop } from '../context/BarbershopContext.jsx';
 
 const EMPTY_FORM = { name: '', email: '', phone: '', password: '' };
 
 export function LoginPage() {
-  const { user, loading, login, register } = useAuth();
+  const { login, register } = useAuth();
+  const { slug, barbershop } = useBarbershop();
+
   const [mode, setMode] = useState('login');
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-
-  if (loading) return <div className="boot">Bryan Barbearia</div>;
-  if (user) return <Navigate to="/" replace />;
 
   const isRegister = mode === 'register';
 
@@ -40,9 +38,9 @@ export function LoginPage() {
     setSubmitting(true);
     try {
       if (isRegister) {
-        await register(form);
+        await register(slug, form);
       } else {
-        await login(form.email, form.password);
+        await login(slug, form.email, form.password);
       }
     } catch (err) {
       if (err instanceof ApiError) {
@@ -64,7 +62,10 @@ export function LoginPage() {
         <ThemeToggle />
       </div>
       <div className="auth__box">
-        <Brand />
+        <div className="brand">
+          <div className="brand__name">{barbershop?.name ?? 'Barbearia'}</div>
+          <div className="brand__sub">Agende seu horário</div>
+        </div>
 
         <div className="tabs" role="tablist">
           <button

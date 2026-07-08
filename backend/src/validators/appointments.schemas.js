@@ -13,7 +13,8 @@ function uniqueServiceIds(ids) {
   return new Set(ids).size === ids.length;
 }
 
-// GET /availability?date=AAAA-MM-DD&service_ids=uuid1,uuid2
+// GET /b/:slug/barbers/:barberId/availability?date=AAAA-MM-DD&service_ids=uuid1,uuid2
+// (o barbeiro vem pela URL; aqui só data + serviços)
 export const availabilityQuerySchema = z.object({
   date: dateField,
   service_ids: z
@@ -25,6 +26,7 @@ export const availabilityQuerySchema = z.object({
 });
 
 export const createAppointmentSchema = z.object({
+  barber_id: z.string({ error: 'Escolha um barbeiro.' }).refine(isUuid, 'Barbeiro inválido.'),
   date: dateField,
   time: z
     .string({ error: 'Horário é obrigatório.' })

@@ -7,8 +7,9 @@ export async function list(barberId) {
 
 // Substitui a semana inteira de uma vez. Só afeta agendamentos futuros ainda
 // não marcados — os existentes têm start/end gravados (regra do CLAUDE.md).
-export async function update(barberId, days) {
+export async function update(barbershopId, barberId, days) {
   const rows = days.map((day) => ({
+    barbershop_id: barbershopId,
     barber_id: barberId,
     weekday: day.weekday,
     closed: day.closed,

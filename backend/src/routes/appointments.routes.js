@@ -25,6 +25,6 @@ router.post(
   appointmentsController.create
 );
 router.post('/:id/cancel', authenticate, appointmentsController.cancel);
-router.post('/:id/done', authenticate, requireRole('barber'), appointmentsController.done);
+router.post('/:id/done', authenticate, requireRole('owner', 'barber'), appointmentsController.done);
 
 export default router;

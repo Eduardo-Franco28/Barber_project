@@ -15,11 +15,13 @@ function issueTokens(user) {
   };
 }
 
-// Cadastro público cria SEMPRE 'client'; a conta do barbeiro é criada por
-// scripts/seed-barber.js (decisão de 2026-07-02).
-export async function register({ name, email, phone, password }) {
+// Cadastro público (pelo link /b/:slug) cria SEMPRE 'client', vinculado à
+// barbearia daquele link. Donos/barbeiros são criados por outro caminho
+// (onboarding / gestão do dono).
+export async function register(barbershopId, { name, email, phone, password }) {
   const passwordHash = await argon2.hash(password);
   const user = await usersRepository.create({
+    barbershopId,
     name,
     email,
     phone,
@@ -30,8 +32,9 @@ export async function register({ name, email, phone, password }) {
   return { user, tokens: issueTokens(user) };
 }
 
-export async function login({ email, password }) {
-  const user = await usersRepository.findByEmail(email);
+// Login é dentro de UMA barbearia (o e-mail é único por barbearia).
+export async function login(barbershopId, { email, password }) {
+  const user = await usersRepository.findByEmailInShop(barbershopId, email);
 
   // Verifica contra um hash de referência mesmo sem usuário, para o tempo de
   // resposta não revelar se o e-mail existe.

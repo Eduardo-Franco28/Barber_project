@@ -6,7 +6,11 @@ export async function list(req, res) {
 }
 
 export async function create(req, res) {
-  const blockedTime = await blockedTimesService.create(req.user.id, req.body);
+  const blockedTime = await blockedTimesService.create(
+    req.user.barbershopId,
+    req.user.id,
+    req.body
+  );
   res.status(201).json({ blocked_time: blockedTime });
 }
 

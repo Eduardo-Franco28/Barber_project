@@ -54,25 +54,24 @@ export function scheduleSync() {
 
 // Monta o workbook inteiro a partir do banco — fonte única da verdade, sempre
 // atual no momento da chamada.
-async function buildWorkbook() {
-  const barber = await usersRepository.findBarber();
-  if (!barber) return null;
+async function buildWorkbook(barberId) {
+  if (!barberId) return null;
 
   const zone = env.barbershopTimezone;
   const windowStart = DateTime.now().setZone(zone).startOf('week'); // segunda
   const windowEnd = windowStart.plus({ weeks: WEEKS_AHEAD + 1 });
 
   const [settings, hours, allFixed, appointments, blocks] = await Promise.all([
-    settingsRepository.findByBarberId(barber.id),
-    businessHoursRepository.findAllByBarber(barber.id),
-    fixedAppointmentsRepository.findAllByBarber(barber.id),
+    settingsRepository.findByBarberId(barberId),
+    businessHoursRepository.findAllByBarber(barberId),
+    fixedAppointmentsRepository.findAllByBarber(barberId),
     appointmentsRepository.findForExcel(
-      barber.id,
+      barberId,
       windowStart.toUTC().toISO(),
       windowEnd.toUTC().toISO()
     ),
     blockedTimesRepository.findOverlapping(
-      barber.id,
+      barberId,
       windowStart.toUTC().toISO(),
       windowEnd.toUTC().toISO()
     ),
@@ -108,17 +107,20 @@ async function buildWorkbook() {
   return workbook;
 }
 
-// Gera o arquivo EM MEMÓRIA (para o download sob demanda — sempre atual, sem
-// depender de disco). Retorna null se ainda não há barbeiro configurado.
-export async function generateBuffer() {
-  const workbook = await buildWorkbook();
+// Gera a planilha de UM barbeiro (o barbeiro logado) EM MEMÓRIA, para o
+// download sob demanda — sempre atual, sem depender de disco.
+export async function generateBuffer(barberId) {
+  const workbook = await buildWorkbook(barberId);
   if (!workbook) return null;
   return workbook.xlsx.writeBuffer();
 }
 
-// Escreve o espelho em disco (só quando EXCEL_MIRROR_ENABLED).
+// Espelho em disco (legado single-barbearia; no multi-barbearia fica desligado
+// por EXCEL_MIRROR_ENABLED=false). Usa o barbeiro mais antigo, se houver.
 export async function syncNow() {
-  const workbook = await buildWorkbook();
+  const barber = await usersRepository.findBarber();
+  if (!barber) return;
+  const workbook = await buildWorkbook(barber.id);
   if (!workbook) return;
   await mkdir(path.dirname(env.excelFilePath), { recursive: true });
   await workbook.xlsx.writeFile(env.excelFilePath);

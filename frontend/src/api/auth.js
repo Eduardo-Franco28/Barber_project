@@ -1,13 +1,15 @@
 import { api } from './client.js';
 
-export function login(email, password) {
-  return api('/auth/login', { method: 'POST', body: { email, password } });
+// Cadastro e login são POR BARBEARIA (pelo link /b/:slug).
+export function login(slug, email, password) {
+  return api(`/b/${slug}/auth/login`, { method: 'POST', body: { email, password } });
 }
 
-export function register(fields) {
-  return api('/auth/register', { method: 'POST', body: fields });
+export function register(slug, fields) {
+  return api(`/b/${slug}/auth/register`, { method: 'POST', body: fields });
 }
 
+// Sessão (o tenant vem do cookie/JWT — não precisa do slug).
 export function me() {
   return api('/auth/me');
 }

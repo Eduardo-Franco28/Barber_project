@@ -6,6 +6,6 @@ export async function get(req, res) {
 }
 
 export async function update(req, res) {
-  const settings = await settingsService.update(req.user.id, req.body);
+  const settings = await settingsService.update(req.user.barbershopId, req.user.id, req.body);
   res.status(200).json({ settings });
 }

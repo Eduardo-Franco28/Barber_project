@@ -9,6 +9,7 @@ import * as servicesRepository from '../repositories/services.repository.js';
 import * as settingsRepository from '../repositories/settings.repository.js';
 import * as usersRepository from '../repositories/users.repository.js';
 import { AppError } from '../utils/app-error.js';
+import { isUuid } from '../utils/uuid.js';
 
 // Regras de borda do agendamento (mudar aqui quando o barbeiro pedir):
 export const BOOKING_HORIZON_DAYS = 60; // marca no máximo 60 dias à frente
@@ -24,15 +25,18 @@ function atLocalTime(day, timeString) {
   return day.set({ hour, minute, second: 0, millisecond: 0 });
 }
 
-// Calcula os horários livres de um dia para um conjunto de serviços.
-// Grade: candidatos a cada default_slot_minutes a partir da abertura (mesmas
-// linhas fixas da planilha do barbeiro); cada candidato precisa caber a soma
-// das durações dos serviços antes do fechamento e não colidir com
-// agendamentos 'scheduled', fixos do dia da semana e bloqueios.
-export async function getAvailability({ date, serviceIds }) {
-  const barber = await usersRepository.findBarber();
+// Horários livres de um dia PARA UM BARBEIRO ESCOLHIDO e um conjunto de
+// serviços dele. Grade: candidatos a cada default_slot_minutes a partir da
+// abertura; cada candidato precisa caber a soma das durações antes do
+// fechamento e não colidir com agendamentos 'scheduled', fixos do dia da
+// semana e bloqueios — tudo DAQUELE barbeiro.
+export async function getAvailability({ barbershopId, barberId, date, serviceIds }) {
+  if (!isUuid(barberId)) {
+    throw new AppError(400, 'Barbeiro inválido.');
+  }
+  const barber = await usersRepository.findBarberInShop(barbershopId, barberId);
   if (!barber) {
-    throw new AppError(503, 'Barbearia ainda não configurada.');
+    throw new AppError(404, 'Barbeiro não encontrado.');
   }
 
   const zone = env.barbershopTimezone;
@@ -49,12 +53,12 @@ export async function getAvailability({ date, serviceIds }) {
     throw new AppError(400, `Agendamentos abrem até ${BOOKING_HORIZON_DAYS} dias à frente.`);
   }
 
-  const services = await servicesRepository.findActiveByIds(serviceIds);
+  const services = await servicesRepository.findActiveByIdsForBarber(barberId, serviceIds);
   if (services.length !== serviceIds.length) {
-    throw new AppError(400, 'Um ou mais serviços são inválidos ou estão inativos.');
+    throw new AppError(400, 'Um ou mais serviços são inválidos ou não são deste barbeiro.');
   }
 
-  const settings = await settingsRepository.findByBarberId(barber.id);
+  const settings = await settingsRepository.findByBarberId(barberId);
   const defaultSlotMinutes = settings?.default_slot_minutes ?? FALLBACK_SLOT_MINUTES;
   const durationMinutes = services.reduce(
     (sum, service) => sum + (service.duration_minutes ?? defaultSlotMinutes),
@@ -62,9 +66,9 @@ export async function getAvailability({ date, serviceIds }) {
   );
 
   const weekday = day.weekday % 7; // luxon: 1=seg…7=dom → JS: 0=dom…6=sáb
-  const hours = await businessHoursRepository.findByWeekday(barber.id, weekday);
+  const hours = await businessHoursRepository.findByWeekday(barberId, weekday);
   if (!hours || hours.closed) {
-    return { date, duration_minutes: durationMinutes, slots: [] };
+    return { date, barber_id: barberId, duration_minutes: durationMinutes, slots: [] };
   }
 
   const open = atLocalTime(day, hours.open_time);
@@ -73,9 +77,9 @@ export async function getAvailability({ date, serviceIds }) {
   const dayEndIso = day.plus({ days: 1 }).startOf('day').toUTC().toISO();
 
   const [appointments, blocks, fixed] = await Promise.all([
-    appointmentsRepository.findScheduledOverlapping(barber.id, dayStartIso, dayEndIso),
-    blockedTimesRepository.findOverlapping(barber.id, dayStartIso, dayEndIso),
-    fixedAppointmentsRepository.findActiveByWeekday(barber.id, weekday),
+    appointmentsRepository.findScheduledOverlapping(barberId, dayStartIso, dayEndIso),
+    blockedTimesRepository.findOverlapping(barberId, dayStartIso, dayEndIso),
+    fixedAppointmentsRepository.findActiveByWeekday(barberId, weekday),
   ]);
 
   const busy = [
@@ -111,5 +115,5 @@ export async function getAvailability({ date, serviceIds }) {
     }
   }
 
-  return { date, duration_minutes: durationMinutes, slots };
+  return { date, barber_id: barberId, duration_minutes: durationMinutes, slots };
 }

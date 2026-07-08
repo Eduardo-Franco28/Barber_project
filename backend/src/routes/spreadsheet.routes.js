@@ -6,6 +6,6 @@ import { requireRole } from '../middlewares/require-role.js';
 
 const router = Router();
 
-router.get('/', authenticate, requireRole('barber'), spreadsheetController.download);
+router.get('/', authenticate, requireRole('owner', 'barber'), spreadsheetController.download);
 
 export default router;

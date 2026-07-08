@@ -6,7 +6,11 @@ export async function list(req, res) {
 }
 
 export async function create(req, res) {
-  const fixedAppointment = await fixedAppointmentsService.create(req.user.id, req.body);
+  const fixedAppointment = await fixedAppointmentsService.create(
+    req.user.barbershopId,
+    req.user.id,
+    req.body
+  );
   res.status(201).json({ fixed_appointment: fixedAppointment });
 }
 

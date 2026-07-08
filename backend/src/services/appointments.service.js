@@ -2,7 +2,6 @@ import { DateTime } from 'luxon';
 
 import env from '../config/env.js';
 import * as appointmentsRepository from '../repositories/appointments.repository.js';
-import * as usersRepository from '../repositories/users.repository.js';
 import { AppError } from '../utils/app-error.js';
 import { isUuid } from '../utils/uuid.js';
 import * as availabilityService from './availability.service.js';
@@ -18,21 +17,27 @@ function shapeAppointment(row) {
   return { ...rest, services: (appointmentServices ?? []).map((item) => item.service) };
 }
 
-export async function create(clientId, { service_ids: serviceIds, date, time }) {
+export async function create(user, { barber_id: barberId, service_ids: serviceIds, date, time }) {
   // Recalcula a disponibilidade server-side com as MESMAS regras do GET
-  // /availability — o horário pedido precisa estar na grade livre.
-  const availability = await availabilityService.getAvailability({ date, serviceIds });
+  // /availability (valida barbeiro na loja + serviços dele) — o horário
+  // pedido precisa estar na grade livre daquele barbeiro.
+  const availability = await availabilityService.getAvailability({
+    barbershopId: user.barbershopId,
+    barberId,
+    date,
+    serviceIds,
+  });
   if (!availability.slots.includes(time)) {
     throw new AppError(409, 'Horário indisponível. Escolha outro horário.');
   }
 
-  const barber = await usersRepository.findBarber();
   const start = DateTime.fromISO(`${date}T${time}`, { zone: env.barbershopTimezone });
   const end = start.plus({ minutes: availability.duration_minutes });
 
   const appointment = await appointmentsRepository.create({
-    client_id: clientId,
-    barber_id: barber.id,
+    barbershop_id: user.barbershopId,
+    client_id: user.id,
+    barber_id: barberId,
     start_at: start.toUTC().toISO(),
     end_at: end.toUTC().toISO(),
   });
@@ -59,7 +64,8 @@ export async function create(clientId, { service_ids: serviceIds, date, time }) 
 }
 
 export async function listFor(user, { from, to } = {}) {
-  if (user.role !== 'barber') {
+  // Cliente vê os próprios; barbeiro/dono veem a agenda deles.
+  if (user.role === 'client') {
     const rows = await appointmentsRepository.listByClient(user.id);
     return rows.map(shapeAppointment);
   }
@@ -121,7 +127,8 @@ export async function cancel(appointmentId, requester) {
   const isOwnerClient =
     requester.role === 'client' && appointment?.client_id === requester.id;
   const isOwnerBarber =
-    requester.role === 'barber' && appointment?.barber_id === requester.id;
+    (requester.role === 'barber' || requester.role === 'owner') &&
+    appointment?.barber_id === requester.id;
 
   // 404 também para agendamento de terceiros: não revelar que o id existe.
   if (!appointment || (!isOwnerClient && !isOwnerBarber)) {

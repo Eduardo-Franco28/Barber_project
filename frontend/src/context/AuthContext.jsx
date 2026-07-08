@@ -27,13 +27,13 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  async function login(email, password) {
-    const data = await authApi.login(email, password);
+  async function login(slug, email, password) {
+    const data = await authApi.login(slug, email, password);
     setUser(data.user);
   }
 
-  async function register(fields) {
-    const data = await authApi.register(fields);
+  async function register(slug, fields) {
+    const data = await authApi.register(slug, fields);
     setUser(data.user);
   }
 
