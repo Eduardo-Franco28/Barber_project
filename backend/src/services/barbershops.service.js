@@ -51,3 +51,28 @@ export async function createWithOwner({
 
   return { barbershop, owner };
 }
+
+// Adiciona um barbeiro (role 'barber') a uma barbearia existente (pelo slug),
+// já com config e horário padrão. O barbeiro depois entra e cadastra os
+// próprios serviços pelo painel.
+export async function addBarber({ slug, name, email, password, phone }) {
+  const barbershop = await barbershopsRepository.findBySlug(slug);
+  if (!barbershop) {
+    throw new AppError(404, 'Barbearia não encontrada (confira o slug/link).');
+  }
+
+  const passwordHash = await argon2.hash(password);
+  const barber = await usersRepository.create({
+    barbershopId: barbershop.id,
+    name: name.trim(),
+    email: email.trim().toLowerCase(),
+    phone: String(phone).replace(/\D/g, ''),
+    passwordHash,
+    role: 'barber',
+  });
+
+  await settingsRepository.createDefaults(barbershop.id, barber.id);
+  await businessHoursRepository.upsertMany(defaultWeek(barbershop.id, barber.id));
+
+  return { barbershop, barber };
+}

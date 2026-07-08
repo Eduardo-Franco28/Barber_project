@@ -159,5 +159,10 @@ export async function cancel(appointmentId, requester) {
 
   excelService.scheduleSync(); // cancelamento libera a célula na planilha
 
+  const shaped = shapeAppointment(
+    await appointmentsRepository.findByIdWithServices(appointmentId)
+  );
+  notificationsService.notifyAppointmentCanceled(shaped, requester.role); // fire-and-forget
+
   return canceled;
 }

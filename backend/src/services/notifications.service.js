@@ -47,6 +47,40 @@ export async function notifyAppointmentCreated(appointment) {
   }
 }
 
+// Aviso de cancelamento — informa o LADO OPOSTO de quem cancelou:
+// cliente cancelou → avisa o barbeiro (o horário abriu de novo);
+// barbeiro/dono cancelou → avisa o cliente (o horário dele caiu).
+// Fire-and-forget pelo appointments.service; nunca derruba a request.
+export async function notifyAppointmentCanceled(appointment, canceledByRole) {
+  try {
+    const [client, barber] = await Promise.all([
+      usersRepository.findById(appointment.client_id),
+      usersRepository.findById(appointment.barber_id),
+    ]);
+    const { data, hora } = formatWhen(appointment.start_at);
+    const servicos = joinServiceNames(appointment.services);
+    const shop = appointment.barbershop?.name ?? 'Barbearia';
+    const canceledByClient = canceledByRole === 'client';
+
+    if (canceledByClient && barber?.phone) {
+      await whatsappService.sendMessage(
+        barber.phone,
+        `${shop}: agendamento CANCELADO — ${client?.name ?? 'cliente'}, ${data} às ${hora} ` +
+          `(${servicos}). O horário está livre de novo.`
+      );
+    }
+    if (!canceledByClient && client?.phone) {
+      await whatsappService.sendMessage(
+        client.phone,
+        `${shop}: seu horário de ${data} às ${hora} (${servicos}) foi cancelado pela barbearia. ` +
+          'Se quiser, marque outro pelo app.'
+      );
+    }
+  } catch (err) {
+    console.error('Notificação de cancelamento falhou:', err.message);
+  }
+}
+
 // Momento 2 (CLAUDE.md): lembrete ~2h antes, via verificação periódica.
 export function startReminderJob() {
   const timer = setInterval(runReminderTick, JOB_INTERVAL_MS);
