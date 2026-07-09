@@ -1,9 +1,10 @@
 import env from '../config/env.js';
 
-// Sem as três variáveis EVOLUTION_* no .env, roda em MODO SIMULADO: a
-// mensagem vai para o log do servidor e nada é enviado. Preenchendo o .env,
-// passa a chamar a Evolution API de verdade — nenhuma mudança de código.
-const configured = Boolean(env.evolutionApiUrl && env.evolutionApiKey && env.evolutionInstance);
+// O SERVIDOR da Evolution é um só (URL + chave no .env), mas cada barbearia
+// envia pela PRÓPRIA instância (o número dela) — passada por chamada. Sem
+// instância (nem no argumento, nem o EVOLUTION_INSTANCE do .env) ou sem
+// URL/chave, roda em MODO SIMULADO: a mensagem vai só para o log.
+const serverConfigured = Boolean(env.evolutionApiUrl && env.evolutionApiKey);
 
 // Telefones são guardados só com dígitos (10-11 = DDD+número) → prefixa o 55.
 function toInternational(phoneDigits) {
@@ -12,19 +13,22 @@ function toInternational(phoneDigits) {
 }
 
 export function isConfigured() {
-  return configured;
+  return serverConfigured;
 }
 
-export async function sendMessage(phoneDigits, text) {
+// instance: nome da instância da barbearia na Evolution (o número dela). Se
+// não vier, usa o EVOLUTION_INSTANCE do .env (modo single-shop/dev).
+export async function sendMessage(phoneDigits, text, instance) {
   const number = toInternational(phoneDigits);
+  const activeInstance = instance || env.evolutionInstance;
 
-  if (!configured) {
-    console.log(`[WhatsApp simulado] para ${number}: ${text}`);
+  if (!serverConfigured || !activeInstance) {
+    console.log(`[WhatsApp simulado] (${activeInstance ?? 'sem instância'}) para ${number}: ${text}`);
     return;
   }
 
   const response = await fetch(
-    `${env.evolutionApiUrl}/message/sendText/${env.evolutionInstance}`,
+    `${env.evolutionApiUrl}/message/sendText/${activeInstance}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', apikey: env.evolutionApiKey },

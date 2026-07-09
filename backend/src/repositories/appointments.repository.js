@@ -4,7 +4,7 @@ import { AppError } from '../utils/app-error.js';
 const COLUMNS = 'id, client_id, barber_id, start_at, end_at, status, created_at';
 
 const WITH_SERVICES = `${COLUMNS},
-  barbershop:barbershops ( name ),
+  barbershop:barbershops ( name, whatsapp_instance ),
   appointment_services ( service:services ( id, name, price, duration_minutes ) )`;
 
 const WITH_SERVICES_AND_CLIENT = `${WITH_SERVICES},
@@ -151,47 +151,6 @@ export async function markDone(id) {
 
   if (error) {
     throw new Error(`Conclusão de agendamento falhou: ${error.message}`);
-  }
-
-  return data[0] ?? null;
-}
-
-// Agendamentos que começam na janela (nowIso, untilIso] e ainda não têm
-// lembrete enviado, com tudo que a mensagem precisa.
-export async function findNeedingReminder(nowIso, untilIso) {
-  const { data, error } = await supabase
-    .from('appointments')
-    .select(
-      `id, start_at, created_at,
-       barbershop:barbershops ( name ),
-       client:users!appointments_client_id_fkey ( name, phone ),
-       barber:users!appointments_barber_id_fkey ( name, phone ),
-       appointment_services ( service:services ( name ) )`
-    )
-    .eq('status', 'scheduled')
-    .is('reminder_sent_at', null)
-    .gt('start_at', nowIso)
-    .lte('start_at', untilIso);
-
-  if (error) {
-    throw new Error(`Busca de lembretes pendentes falhou: ${error.message}`);
-  }
-
-  return data;
-}
-
-// Marca o lembrete como enviado só se ainda estava pendente (idempotente);
-// retorna null se outro tick já marcou.
-export async function claimReminder(id) {
-  const { data, error } = await supabase
-    .from('appointments')
-    .update({ reminder_sent_at: new Date().toISOString() })
-    .eq('id', id)
-    .is('reminder_sent_at', null)
-    .select('id');
-
-  if (error) {
-    throw new Error(`Marcação de lembrete falhou: ${error.message}`);
   }
 
   return data[0] ?? null;

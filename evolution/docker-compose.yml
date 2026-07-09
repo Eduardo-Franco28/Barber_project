@@ -1,0 +1,56 @@
+# Evolution API (WhatsApp) para rodar LOCAL e testar as notificações do app.
+# Sobe 3 coisas: a Evolution + o banco dela (Postgres) + um cache (Redis).
+# Você só precisa: ter o Docker aberto e rodar "docker compose up -d" nesta pasta.
+#
+# Antes de subir, troque a chave abaixo (AUTHENTICATION_API_KEY) por uma sua.
+# Essa mesma chave vai no backend/.env como EVOLUTION_API_KEY.
+
+services:
+  evolution-api:
+    image: evoapicloud/evolution-api:v2.3.1
+    container_name: evolution_api
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_URL: http://localhost:8080
+      # >>> TROQUE por uma chave sua (qualquer texto secreto) <<<
+      AUTHENTICATION_API_KEY: chave_whatsapp_evolutio_api
+      # Banco da Evolution (interno, não precisa mexer)
+      DATABASE_ENABLED: "true"
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: postgresql://evolution:evolution@postgres:5432/evolution?schema=public
+      DATABASE_CONNECTION_CLIENT_NAME: evolution
+      # Cache (interno, não precisa mexer)
+      CACHE_REDIS_ENABLED: "true"
+      CACHE_REDIS_URI: redis://redis:6379/6
+      CACHE_REDIS_PREFIX_KEY: evolution
+      CACHE_LOCAL_ENABLED: "false"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - evolution_instances:/evolution/instances
+
+  postgres:
+    image: postgres:15
+    container_name: evolution_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: evolution
+      POSTGRES_PASSWORD: evolution
+      POSTGRES_DB: evolution
+    volumes:
+      - evolution_postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: evolution_redis
+    restart: always
+    volumes:
+      - evolution_redis:/data
+
+volumes:
+  evolution_instances:
+  evolution_postgres:
+  evolution_redis:

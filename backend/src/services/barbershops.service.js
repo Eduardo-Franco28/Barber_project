@@ -25,6 +25,7 @@ export async function createWithOwner({
   ownerEmail,
   ownerPassword,
   ownerPhone,
+  whatsappInstance,
 }) {
   const cleanSlug = slug ? slugify(slug) : slugify(shopName);
   if (!isValidSlug(cleanSlug)) {
@@ -34,6 +35,9 @@ export async function createWithOwner({
   const barbershop = await barbershopsRepository.create({
     name: shopName.trim(),
     slug: cleanSlug,
+    // Instância da Evolution (número de WhatsApp da barbearia). Opcional: sem
+    // ela, cai no EVOLUTION_INSTANCE do .env ou no modo simulado.
+    whatsappInstance: whatsappInstance?.trim() || null,
   });
 
   const passwordHash = await argon2.hash(ownerPassword);
