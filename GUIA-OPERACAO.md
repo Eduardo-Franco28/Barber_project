@@ -112,18 +112,20 @@ Espere alguns minutos e o site no ar já está com a nova versão.
 > deploy. Elas moram no painel de cada serviço (não no código). Veja o
 > `DEPLOY.md` para a lista.
 
-### 3.2. A virada única do multi-barbearia (migração 0004)
+### 3.2. A virada única do multi-barbearia (migrações 0004 e 0005)
 
 O banco de **produção** ainda está no formato antigo (uma barbearia só). Antes
-de o sistema multi-barbearia funcionar no ar, é preciso rodar **uma vez** a
-migração `backend/db/migrations/0004_multi_tenant.sql` no banco de produção:
+de o sistema multi-barbearia funcionar no ar, é preciso rodar **uma vez** as
+migrações que faltam no banco de produção:
 
 1. Entre no painel do **Supabase de produção**.
 2. Abra **SQL Editor**.
-3. Cole o conteúdo de `backend/db/migrations/0004_multi_tenant.sql` e execute.
+3. Cole e execute o conteúdo de `backend/db/migrations/0004_multi_tenant.sql`.
+4. Cole e execute o conteúdo de `backend/db/migrations/0005_whatsapp_instance.sql`.
 
-Isso adiciona a tabela de barbearias e prepara as demais. É feito **só uma
-vez**. (No banco de teste isso já foi feito.)
+A 0004 adiciona a tabela de barbearias e prepara as demais; a 0005 adiciona o
+número de WhatsApp por barbearia. É feito **só uma vez**. (No banco de teste já
+foi feito.)
 
 ### 3.3. Criar uma barbearia/barbeiro DIRETO em produção
 
@@ -153,39 +155,45 @@ mesmos scripts da sua máquina, mas **apontando pro banco de produção**:
 
 ## 4. Ativar as notificações no WhatsApp (Evolution API)
 
-O app já **manda mensagens** nestes momentos, sem precisar mexer em código:
+O app manda mensagem **só para o barbeiro** (o cliente vê tudo no app):
 
 | Quando | Quem recebe |
 |---|---|
-| Novo agendamento | Cliente **e** barbeiro |
+| Novo agendamento | Barbeiro daquele agendamento |
 | Cliente cancela | Barbeiro (o horário abriu de novo) |
-| Barbeiro cancela | Cliente (o horário dele caiu) |
-| ~2h antes do horário | Cliente e barbeiro (lembrete) |
 
-**Enquanto você não tem a Evolution API**, o sistema roda em **modo simulado**:
-as mensagens aparecem só no log do servidor e **nada é enviado** de verdade.
-Isso é o padrão — não precisa configurar nada pra desenvolver/testar.
+Clientes **não** recebem WhatsApp, e **não há mais lembrete de 2h** — isso
+reduz o volume e o risco de bloqueio do número.
 
-**Quando comprar a Evolution API**, ativar é só preencher 3 variáveis no
-ambiente (no `.env` local, ou no painel do Render em produção) e reiniciar —
-**sem tocar no código**:
+**Cada barbearia envia pelo próprio número.** O servidor da Evolution é um só
+(compartilhado); o número de cada barbearia é a "instância" dela, guardada no
+banco. Você define a instância ao criar (`create-barbershop.js`, último arg) ou
+depois: `node scripts/set-whatsapp-instance.js "slug" "nome-da-instancia"`.
+
+**Enquanto a barbearia não tiver instância** (ou sem os `EVOLUTION_*`
+preenchidos), o envio roda em **modo simulado**: aparece só no log e nada é
+enviado. É o padrão pra desenvolver/testar.
+
+**Pra ativar de verdade**, preencha no ambiente (no `.env` local, ou no painel
+do Render) — **sem tocar no código**:
 
 ```
-EVOLUTION_API_URL=https://sua-evolution.com
+EVOLUTION_API_URL=https://sua-evolution.com   # servidor da Evolution (VPS)
 EVOLUTION_API_KEY=sua-chave
-EVOLUTION_INSTANCE=nome-da-instancia
+EVOLUTION_INSTANCE=                            # deixe VAZIO: a instância vem da barbearia
 ```
 
-Assim que as três estiverem preenchidas, o app passa a enviar de verdade.
+Pra rodar a Evolution na sua máquina e testar antes de comprar servidor, siga o
+`EVOLUTION-LOCAL.md`.
 
-> ⚠️ Use um número de WhatsApp **dedicado** da barbearia (não o pessoal do
+> ⚠️ Use um número de WhatsApp **dedicado** por barbearia (não o pessoal do
 > barbeiro). A Evolution conecta como um "WhatsApp Web" automatizado, então há
-> um risco (baixo, no volume de uma barbearia) de bloqueio se enviar muita
-> mensagem repetida/rápida. Detalhes no `CLAUDE.md` › Notificações.
+> um risco (baixo, no volume de uma barbearia) de bloqueio. Um número por
+> barbearia isola esse risco. Detalhes no `CLAUDE.md` › Notificações.
 >
-> ⚠️ No Render free o servidor "dorme" quando fica ocioso — o lembrete de ~2h
-> antes pode atrasar/pular nesses períodos. As mensagens de agendamento e
-> cancelamento (que acontecem no momento da ação) não são afetadas.
+> ⚠️ Pra vender, a Evolution precisa rodar numa **VPS com URL pública** — não
+> no seu PC (`localhost` só funciona na sua máquina). Um servidor atende todas
+> as barbearias.
 
 ---
 

@@ -187,13 +187,22 @@ requisitos, não como "nice to have":
 
 ## Notificações via WhatsApp
 
-- Lembrete de agendamento enviado tanto para o **cliente** quanto para o
-  **barbeiro**, em dois momentos:
-  1. **Na confirmação** — assim que o agendamento é criado.
-  2. **~2 horas antes** do horário marcado — lembrete de proximidade.
-     Isso exige um job agendado (ex: `node-cron` ou fila com verificação
-     periódica) que varre os agendamentos e dispara a mensagem quando faltar
-     ~2h para o horário.
+> **Atualizado 2026-07-10:** só o **barbeiro** recebe WhatsApp, em dois
+> momentos: (1) **novo agendamento** e (2) **cancelamento pelo cliente**. Os
+> **clientes não recebem mais WhatsApp** (veem tudo no app) e o **lembrete de
+> ~2h foi removido** — por pedido do usuário, pra reduzir volume e risco de
+> bloqueio do número. A instância (número) é **por barbearia** (ver abaixo).
+
+- Mensagens enviadas (todas só para o barbeiro do agendamento):
+  1. **Novo agendamento** — assim que o cliente marca.
+  2. **Cancelamento** — quando o **cliente** cancela (se o próprio barbeiro
+     cancela, ele já sabe; ninguém é notificado).
+- **Instância por barbearia:** cada barbearia envia pelo **próprio número**,
+  guardado em `barbershops.whatsapp_instance` (migration 0005). O **servidor**
+  da Evolution é compartilhado (URL + chave no `.env`/Render); a **instância**
+  vem da barbearia do agendamento. `EVOLUTION_INSTANCE` no env é só um fallback
+  de dev — em produção fica **vazio**. Definir a instância de uma barbearia:
+  `scripts/create-barbershop.js` (último arg) ou `scripts/set-whatsapp-instance.js`.
 - **Provedor: Evolution API** (open source, self-hosted) — é a opção de
   **menor custo**, já que você paga só o servidor onde ela roda (na faixa de
   R$50–200/mês) em vez de pagar por mensagem enviada.
@@ -206,10 +215,16 @@ requisitos, não como "nice to have":
   - Alternativa caso o risco de bloqueio pese: **Z-API** (também brasileira,
     preço baixo, mas cobra por uso) — mais estável que self-host, ainda mais
     barata que Twilio/API oficial da Meta.
-- Mensagem deve ser simples e direta: dia, horário e serviço (para o cliente),
-  e dia, horário, cliente e serviço (para o barbeiro).
-- Número de WhatsApp do cliente precisa ser coletado no cadastro (campo
-  adicional em `users`).
+- Mensagem simples e direta para o barbeiro: dia, horário, cliente e serviço.
+- Número de WhatsApp do cliente ainda é coletado no cadastro (usado no app e
+  disponível caso um dia se volte a notificar o cliente), mas hoje **não**
+  recebe mensagem.
+- **Rodar a Evolution local pra testar:** `evolution/docker-compose.yml`
+  (imagem `evoapicloud/evolution-api:v2.3.1` — a v2.1.1 tem bug que não gera
+  QR) + guia `EVOLUTION-LOCAL.md`. Sem os `EVOLUTION_*` preenchidos, o envio
+  roda em **modo simulado** (mensagem só no log). Pra vender, a Evolution
+  precisa sair do `localhost` e ir pra uma **VPS com URL pública** (o servidor
+  é um só pra todas as barbearias; cada barbearia é uma instância).
 
 ---
 
