@@ -14,3 +14,6 @@ backend/data/
 
 # Logs
 *.log
+
+# QR code de teste da Evolution (gerado, descartável)
+evolution/qrcode.png

@@ -1,21 +1,29 @@
-import { api } from './client.js';
+import { api, clearTokens, setTokens } from './client.js';
 
 // Cadastro e login são POR BARBEARIA (pelo link /b/:slug).
-export function login(slug, email, password) {
-  return api(`/b/${slug}/auth/login`, { method: 'POST', body: { email, password } });
+export async function login(slug, email, password) {
+  const data = await api(`/b/${slug}/auth/login`, { method: 'POST', body: { email, password } });
+  setTokens(data.tokens);
+  return data;
 }
 
-export function register(slug, fields) {
-  return api(`/b/${slug}/auth/register`, { method: 'POST', body: fields });
+export async function register(slug, fields) {
+  const data = await api(`/b/${slug}/auth/register`, { method: 'POST', body: fields });
+  setTokens(data.tokens);
+  return data;
 }
 
-// Sessão (o tenant vem do cookie/JWT — não precisa do slug).
+// Sessão (o tenant vem do token — não precisa do slug).
 export function me() {
   return api('/auth/me');
 }
 
-export function logout() {
-  return api('/auth/logout', { method: 'POST' });
+export async function logout() {
+  try {
+    await api('/auth/logout', { method: 'POST' });
+  } finally {
+    clearTokens();
+  }
 }
 
 export function updateProfile(fields) {

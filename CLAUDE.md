@@ -425,3 +425,17 @@ sem elementos tipo navalha/listras retrô).
   `DEPLOY.md`. Caveats documentados: Render free dorme (lembrete ~2h pode
   pular), e cookie de terceiros pode falhar no Safari/iOS → recomendado
   domínio próprio (api. + app.) para cookie same-site.
+- Auth por header no iOS (2026-07-13): o cookie de sessão **não funciona no
+  Safari/iOS** com front (Vercel) e back (Render) em domínios diferentes — o
+  Safari bloqueia cookie de terceiros (barbeiro real travou em "Não
+  autenticado" na aba Serviços). Correção escolhida pelo usuário (a rápida, só
+  código): login/refresh devolvem os tokens **no corpo**; o front guarda em
+  `localStorage` e manda no header **`Authorization: Bearer`**. `authenticate`
+  lê o header (fallback cookie); `/auth/refresh` aceita `refresh_token` no
+  corpo (fallback cookie). O cookie httpOnly **continua sendo setado** como
+  fallback (desktop/mesmo domínio inalterado). **Trade-off aceito** (revoga a
+  preferência por cookie da seção Segurança): token em `localStorage` tem mais
+  exposição a XSS que o httpOnly — a alternativa sem esse trade-off é o domínio
+  próprio (front+api same-site), que fica pra depois. Verificado: auth só com
+  header (sem cookie) 200; login→aba Serviços no navegador OK; tokens no
+  localStorage.
